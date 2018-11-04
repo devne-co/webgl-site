@@ -183,7 +183,7 @@ window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font
         antialias:true
     });
 
-    renderer.setPixelRatio(window.devicePixelRatio);
+  //  renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(width, height);
 
     const composer = new THREE.EffectComposer(renderer);
@@ -231,7 +231,7 @@ window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font
 
     let textGeo = new THREE.TextGeometry(baseLogo,{
         font:font,
-        size:60,
+        size:100,
         height:1,
         curveSegments: 12
     });
@@ -244,6 +244,7 @@ window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font
     text.position.y = 320;
     text.position.z = 2000;
     scene.add(text);
+  //  scene.add(new THREE.AxisHelper(20000));
     let randLogoArr = Array(baseLogo.length);
     let nowLogo = baseLogo;
     let count = 0;
@@ -281,6 +282,7 @@ window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font
             curveSegments: 12
         }));
         text.geometry.center();
+      //  camera.rotation.y += 0.01;
         camera.position.z += 10;
         text.position.z += 10;
        // renderer.render(scene, camera);
