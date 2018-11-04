@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3adf0f3a-5517-4f42-843f-b7009c9fd43c" name="Default" comment="" />
+    <list default="true" id="3adf0f3a-5517-4f42-843f-b7009c9fd43c" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,8 +30,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="15" selection-start-column="15" selection-end-column="15" />
+            <state relative-caret-position="150">
+              <caret line="10" column="55" selection-start-line="10" selection-start-column="55" selection-end-line="10" selection-end-column="55" />
             </state>
           </provider>
         </entry>
@@ -71,17 +73,8 @@
       <file leaf-file-name="index.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="78">
-              <caret line="173" column="19" selection-start-line="173" selection-start-column="19" selection-end-line="173" selection-end-column="19" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GlitchPass.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/examples/GlitchPass.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1292">
-              <caret line="4" selection-start-line="4" selection-end-line="4" />
+            <state relative-caret-position="154">
+              <caret line="86" column="28" selection-start-line="86" selection-start-column="28" selection-end-line="86" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -127,8 +120,8 @@
         <option value="$PROJECT_DIR$/shader/fragment.fsh" />
         <option value="$PROJECT_DIR$/shader/vertex.vsh" />
         <option value="$PROJECT_DIR$/shader/vertex.vert" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/shader/fragment.frag" />
+        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/index.js" />
       </list>
     </option>
@@ -282,15 +275,16 @@
       <workItem from="1540562239383" duration="21096000" />
       <workItem from="1540819376654" duration="7331000" />
       <workItem from="1541085916348" duration="16993000" />
-      <workItem from="1541177178478" duration="15118000" />
+      <workItem from="1541177178478" duration="15795000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="84260000" />
+    <option name="totallyTimeSpent" value="84937000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info anchor="right" id="PlantUML" order="3" />
       <window_info anchor="right" id="Palette" order="3" />
@@ -301,10 +295,10 @@
       <window_info anchor="right" id="Remote Host" order="3" />
       <window_info id="Designer" order="2" />
       <window_info anchor="right" id="Database" order="3" visible="true" weight="0.3297568" />
-      <window_info id="Structure" order="1" sideWeight="0.5045208" side_tool="true" visible="true" weight="0.27110156" />
+      <window_info id="Structure" order="1" sideWeight="0.50285715" side_tool="true" visible="true" weight="0.27110156" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.36363637" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.36363637" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
@@ -312,8 +306,8 @@
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Floobits" order="7" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.32969698" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4954792" visible="true" weight="0.27110156" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32969698" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49714285" visible="true" weight="0.27110156" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32969698" />
       <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info id="Favorites" order="2" side_tool="true" />
@@ -535,13 +529,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/three.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="70" column="479" selection-start-line="70" selection-start-column="479" selection-end-line="70" selection-end-column="479" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/examples/GlitchPass.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1292">
@@ -555,13 +542,6 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="15" selection-start-column="15" selection-end-column="15" />
         </state>
       </provider>
     </entry>
@@ -582,10 +562,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="55" selection-start-line="10" selection-start-column="55" selection-end-line="10" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/three.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="70" column="479" selection-start-line="70" selection-start-column="479" selection-end-line="70" selection-end-column="479" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="78">
-          <caret line="173" column="19" selection-start-line="173" selection-start-column="19" selection-end-line="173" selection-end-column="19" />
+        <state relative-caret-position="154">
+          <caret line="86" column="28" selection-start-line="86" selection-start-column="28" selection-end-line="86" selection-end-column="28" />
         </state>
       </provider>
     </entry>

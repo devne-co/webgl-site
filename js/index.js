@@ -60,7 +60,7 @@ class WireBase{
 
 
         const linemat = new THREE.LineBasicMaterial({
-            color: 0x666666,
+            color: 0x333333,
         });
         for (let i = -n;i <= n;++i){
             let x = i * size + Math.random() * (size / 2);
