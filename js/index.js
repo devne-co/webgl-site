@@ -83,11 +83,11 @@ class WireBase{
         this.count = max;
         this.line = new THREE.Line(this.geometry,linemat);
         this.line.frustumCulled = false;
-        this.box = new THREE.BoxHelper(new THREE.Line(this.geometry,linemat));
-        this.box.update();
+     /*   this.box = new THREE.BoxHelper(new THREE.Line(this.geometry,linemat));
+        this.box.update();*/
         console.log(this.geometry.position);
         scene.add(this.line);
-        scene.add(this.box);
+      //  scene.add(this.box);
     }
 
     next(){
