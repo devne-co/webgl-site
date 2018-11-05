@@ -1,15 +1,6 @@
-class StageBase{
-    constructor(scene,camera){
-        this.scene = scene;
-        this.camera = camera;
-    }
 
-    update(count){
 
-    }
-}
-
-class WireBase{
+class WireGround{
     constructor(size,n,max,scene){
         this.count = 0;
         this.size = size;
@@ -20,8 +11,6 @@ class WireBase{
 
         this.geometry = new THREE.BufferGeometry();
         this.geometry.addAttribute('position',new THREE.BufferAttribute(new Float32Array(this.maxLength * 3),3));
-
-
 
         const linemat = new THREE.LineBasicMaterial({
             color: 0x333333,
@@ -59,7 +48,6 @@ class WireBase{
             this.geometry.attributes.position.array = newArr;
             this.nowLength -= del;
         }
-
 
         let arr = [];
         for (let i = this.n;i >= -this.n; --i) {
@@ -107,7 +95,7 @@ class WireBase{
 class WireBaseStage extends StageBase{
     constructor(scene,camera){
         super(scene,camera);
-        this.wireBase = new WireBase(100,30,50,this.scene);
+        this.wireBase = new WireGround(100,30,50,this.scene);
     }
 
     update(count){
@@ -117,19 +105,19 @@ class WireBaseStage extends StageBase{
 }
 
 const fontLoader = new THREE.FontLoader();
+
 const baseLogo = "devne.co";
+const width = window.innerWidth;
+const height = window.innerHeight;
 
 window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font) => {
     console.log(document.querySelector('#main'));
-    const width = window.innerWidth;
-    const height = window.innerHeight;
 
     const renderer = new THREE.WebGLRenderer({
         canvas:document.querySelector('#main'),
         antialias:true
     });
 
-  //  renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(width, height);
 
     const composer = new THREE.EffectComposer(renderer);
@@ -152,7 +140,6 @@ window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font
         url:'./shader/fragment.frag',
         async:false
     }).responseText;
-    console.log(ppv);
     THREE.PostProcessShader = {
         uniforms:{
             "u_count":{
@@ -165,7 +152,6 @@ window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font
         vertexShader:ppv,
         fragmentShader:ppf
     };
-
 
     let textGeo = new THREE.TextGeometry(baseLogo,{
         font:font,
@@ -188,7 +174,6 @@ window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font
     composer.addPass(shaderPass);
     console.log(shaderPass);
 
-   // const wb = new WireBase(100,30,50,scene);
     const wbStage = new WireBaseStage(scene,camera);
 
     let randLogoArr = Array(baseLogo.length);
