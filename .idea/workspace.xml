@@ -4,7 +4,7 @@
     <list default="true" id="3adf0f3a-5517-4f42-843f-b7009c9fd43c" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shader/fragment.frag" beforeDir="false" afterPath="$PROJECT_DIR$/shader/fragment.frag" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/model.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/model.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -68,11 +68,20 @@
               <provider selected="true" editor-type-id="text-editor" />
             </entry>
           </file>
-          <file leaf-file-name="index.js" pinned="false" current-in-tab="true">
+          <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/js/index.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="154">
-                  <caret line="112" column="33" selection-start-line="112" selection-start-column="33" selection-end-line="112" selection-end-column="33" />
+                <state relative-caret-position="174">
+                  <caret line="384" column="30" lean-forward="true" selection-start-line="384" selection-start-column="30" selection-end-line="384" selection-end-column="30" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="RenderPass.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/js/examples/RenderPass.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="60">
+                  <caret line="4" selection-start-line="4" selection-end-line="4" />
                 </state>
               </provider>
             </entry>
@@ -80,17 +89,17 @@
           <file leaf-file-name="EffectComposer.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/js/examples/EffectComposer.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="90">
-                  <caret line="6" column="17" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="17" />
+                <state relative-caret-position="1305">
+                  <caret line="87" column="8" selection-start-line="87" selection-start-column="8" selection-end-line="87" selection-end-column="8" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="model.js" pinned="false" current-in-tab="false">
+          <file leaf-file-name="model.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/js/model.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="105">
-                  <caret line="7" selection-start-line="7" selection-end-line="7" />
+                <state relative-caret-position="60">
+                  <caret line="4" column="36" selection-start-line="4" selection-start-column="36" selection-end-line="4" selection-end-column="36" />
                 </state>
               </provider>
             </entry>
@@ -98,8 +107,8 @@
           <file leaf-file-name="three.min.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/js/three.min.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2760">
-                  <caret line="184" column="265" selection-start-line="184" selection-start-column="265" selection-end-line="184" selection-end-column="265" />
+                <state relative-caret-position="159">
+                  <caret line="194" column="168" selection-start-line="194" selection-start-column="168" selection-end-line="194" selection-end-column="168" />
                 </state>
               </provider>
             </entry>
@@ -111,7 +120,7 @@
           <file leaf-file-name="fragment.frag" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/shader/fragment.frag">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="435">
+                <state relative-caret-position="290">
                   <caret line="29" column="29" selection-start-line="29" selection-start-column="29" selection-end-line="29" selection-end-column="29" />
                 </state>
               </provider>
@@ -151,11 +160,11 @@
         <option value="$PROJECT_DIR$/shader/fragment.fsh" />
         <option value="$PROJECT_DIR$/shader/vertex.vsh" />
         <option value="$PROJECT_DIR$/shader/vertex.vert" />
-        <option value="$PROJECT_DIR$/js/model.js" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/file.json" />
         <option value="$PROJECT_DIR$/shader/fragment.frag" />
         <option value="$PROJECT_DIR$/js/index.js" />
+        <option value="$PROJECT_DIR$/js/model.js" />
       </list>
     </option>
   </component>
@@ -178,6 +187,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -210,9 +222,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -314,12 +323,14 @@
       <workItem from="1541774977235" duration="598000" />
       <workItem from="1541783582343" duration="18000" />
       <workItem from="1541921325903" duration="11573000" />
-      <workItem from="1542332981924" duration="8982000" />
+      <workItem from="1542332981924" duration="11669000" />
+      <workItem from="1542547557197" duration="177000" />
+      <workItem from="1542547772829" duration="7823000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="135714000" />
+    <option name="totallyTimeSpent" value="146401000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -341,9 +352,9 @@
       <window_info id="Capture Tool" order="2" />
       <window_info anchor="right" id="Remote Host" order="3" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48761904" visible="true" weight="0.1423462" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4857143" visible="true" weight="0.14592275" />
       <window_info anchor="right" id="Database" order="3" weight="0.32886904" />
-      <window_info id="Structure" order="1" sideWeight="0.51238096" side_tool="true" visible="true" weight="0.1423462" />
+      <window_info id="Structure" order="1" sideWeight="0.51428574" side_tool="true" visible="true" weight="0.14592275" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="right" id="Theme Preview" order="3" />
@@ -365,13 +376,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="8" />
+      <option name="time" value="16" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/jquery-3.3.1.min.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/model.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -557,21 +565,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/three.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2760">
-          <caret line="184" column="265" selection-start-line="184" selection-start-column="265" selection-end-line="184" selection-end-column="265" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/file.json" />
-    <entry file="file://$PROJECT_DIR$/js/model.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/jquery-3.3.1.min.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -585,13 +579,6 @@
     <entry file="file://$PROJECT_DIR$/js/examples/ShaderPass.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/examples/EffectComposer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="17" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/shader/fragment.frag">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="480">
@@ -599,10 +586,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/examples/RenderPass.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/examples/EffectComposer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1305">
+          <caret line="87" column="8" selection-start-line="87" selection-start-column="8" selection-end-line="87" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="112" column="33" selection-start-line="112" selection-start-column="33" selection-end-line="112" selection-end-column="33" />
+        <state relative-caret-position="174">
+          <caret line="384" column="30" lean-forward="true" selection-start-line="384" selection-start-column="30" selection-end-line="384" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/three.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="194" column="168" selection-start-line="194" selection-start-column="168" selection-end-line="194" selection-end-column="168" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/model.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="36" selection-start-line="4" selection-start-column="36" selection-end-line="4" selection-end-column="36" />
         </state>
       </provider>
     </entry>

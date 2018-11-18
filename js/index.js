@@ -1,3 +1,61 @@
+THREE.PostProcessShader = {
+    uniforms:{
+        "u_count":{
+            value:0
+        },
+        "u_glitch_slide":{
+            value:0.05
+        },
+        "u_glitch_slide_p":{
+            value:0.2
+        },
+        "u_glitch_time":{
+            value:20
+        },
+        "u_noise_alpha":{
+            value:0.05
+        },
+        "u_noise_height":{
+            value:10
+        },
+        "tDiffuse":{
+            value:null
+        }
+    },
+    vertexShader:$.ajax({
+        type:'GET',
+        url:'./shader/vertex.vert',
+        async:false
+    }).responseText,
+    fragmentShader:$.ajax({
+        type:'GET',
+        url:'./shader/fragment.frag',
+        async:false
+    }).responseText
+};
+
+
+/*const ppv = $.ajax({
+    type:'GET',
+    url:'./shader/vertex.vert',
+    async:false
+}).responseText;
+
+const ppf = $.ajax({
+    type:'GET',
+    url:'./shader/fragment.frag',
+    async:false
+}).responseText;*/
+
+/*
+
+
+ */
+
+
+
+
+
 class WireGround{
     constructor(size,n,max,scene){
         this.count = 0;
@@ -97,11 +155,16 @@ class CubeCylinder{
         this.max = max;
         this.count = 0;
         this.scene = scene;
-        this.squares = [[]];
-        this.cubeGeo = new THREE.EdgesGeometry(new THREE.CubeGeometry(l,l,l));
+        this.squares = [];
+        this.l = r * 2 * Math.PI / this.sides;
+        this.cubeGeo = new THREE.CubeGeometry(this.l,this.l,this.l);
+        this.cubeEdgesGeo = new THREE.EdgesGeometry(this.cubeGeo);
         this.cubeGeo.center();
         this.cubeMat = new THREE.LineBasicMaterial({
             color:0x666666
+        });
+        this.cubeInMat = new THREE.MeshBasicMaterial({
+            color:0x000000
         });
         for (let i = 0;i < this.max;++i){
             this.next();
@@ -110,91 +173,65 @@ class CubeCylinder{
 
     next(){
         if(this.count >= this.max){
-            for(let i = 0;i < this.sides;++i){
-                this.scene.remove(this.squares[0][i]);
-            }
-            this.squares = this.squares.shift();
+            this.scene.remove(this.squares[0]);
+            this.squares.shift();
         }
-        const l = r * 2 * Math.PI / this.sides;
+        const bigGroup = new THREE.Group();
         for(let i = 0;i < this.sides;++i){
             const d = Math.PI * 2 * i / this.sides;
-            const x = Math.cos(d) * r;
-            const y = Math.sin(d) * r;
-            const z = this.count * l;
-            let cube = new THREE.Line(this.cubeGeo,this.cubeMat);
-            const s = (Math.random() / 2) + 1;
-            cube.position.set(x,y,z);
-            cube.scale.set(s,s,s);
-            cube.rotation.z = d;
-            this.scene.add(cube);
-            this.squares[this.count].push(cube);
+            const x = Math.cos(d) * this.r;
+            const y = Math.sin(d) * this.r;
+            const z = this.count * this.l;
+            let cube = new THREE.LineSegments(this.cubeEdgesGeo,this.cubeMat);
+            const s = (Math.random() * 1.5) + 0.4;
+            let cubeIn = new THREE.Mesh(this.cubeGeo,this.cubeInMat);
+            cubeIn.scale.set(0.99,0.99,0.99);
+            let group = new THREE.Group();
+            group.add(cube);
+            group.add(cubeIn);
+            group.position.set(x,y,z);
+            group.scale.set(s,s,s);
+            group.rotation.z = d;
+            bigGroup.add(group);
         }
+        this.scene.add(bigGroup);
+        this.squares.push(bigGroup);
         ++this.count;
     }
 }
 
-class CubeCylinderStagge extends StageBase{
-    constructor(scene,camera) {
-        super(scene, camera);
-        this.cubeCylinder = new CubeCylinder();
-    }
+class CubeCylinderStage extends StageBase{
+    constructor() {
+        super();
+        this.cubeCylinder = new CubeCylinder(50,1500,30,this.scene);
+        this.camera.position.set(0,0,-1000);
+        this.camera.lookAt(0,0,300);
 
-    update(){
+        this.scene.fog = new THREE.Fog(0x000000,2000,4000);
 
-    }
-
-}
-
-class GoroGoroCubeStage extends StageBase{
-    constructor(scene,camera){
-        super(scene,camera);
-        this.oneSide = 30;
-        this.count = 10;
-        this.side = this.oneSide * this.count;
-        const cubeGeometry = new THREE.CubeGeometry(this.side,this.side,this.side,this.count,this.count,this.count);
-
-        this.wrap = new THREE.Group();
-        const insideCube = new THREE.Mesh(cubeGeometry,new THREE.MeshBasicMaterial({
-            color:0x000000
-        }));
-        insideCube.scale.x = 0.98;
-        insideCube.scale.y = 0.98;
-        insideCube.scale.z = 0.98;
-        this.wrap.add(insideCube);
-        const square = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(this.side,this.side)),new THREE.LineBasicMaterial({
-            color:0x666666
-        }));
-        for (let i = 0;i < this.count;++i){
-            let sx = square.clone();
-            let sy = square.clone();
-            let sz = square.clone();
-            sx.position.x = i * this.oneSide - this.side / 2;
-            sy.position.y = i * this.oneSide - this.side / 2;
-            sz.position.z = i * this.oneSide - this.side / 2;
-            sy.rotation.y = Math.PI / 2;
-            sz.rotation.z = Math.PI / 2;
-            this.wrap.add(sx);
-            this.wrap.add(sy);
-            this.wrap.add(sz);
-        }
-        this.wrap.position.z = 1000;
-        this.wrap.rotation.y = Math.PI / 4;
-        this.wrap.rotation.x = Math.PI / 4;
-        this.camera.lookAt(this.wrap.position);
-
-        scene.add(this.wrap);
-    }
-}
-
-class WireBaseStage extends StageBase{
-    constructor(scene,camera){
-        super(scene,camera);
-        this.wireBase = new WireGround(100,20,50,this.scene);
     }
 
     update(count){
-        if((count % 20) === 0)this.wireBase.next();
-        this.camera.position.z += 5;
+        if((count % 5) === 0)this.cubeCylinder.next();
+        this.camera.position.z += this.cubeCylinder.l / 5;
+        this.camera.rotation.z += Math.PI * 2 / 1000;
+    }
+
+}
+
+class WireBaseStage extends StageBase{
+    constructor(){
+        super();
+        this.wireBase = new WireGround(100,20,50,this.scene);
+        this.camera.position.y = 200;
+        this.camera.lookAt(0,150,3000);
+
+        this.scene.fog = new THREE.Fog(0x000000,2000,4000);
+    }
+
+    update(count){
+        if((count % 5) === 0)this.wireBase.next();
+        this.camera.position.z += 20;
     }
 }
 
@@ -277,6 +314,107 @@ class Logo{
     }
 }
 
+class Page{
+    constructor(width,height,logoFont){
+        const renderer = new THREE.WebGLRenderer({
+            canvas:document.querySelector('#main'),
+            antialias:true
+        });
+        renderer.setSize(width, height);
+
+        this.composer = new THREE.EffectComposer(renderer);
+
+        this.shader = new THREE.ShaderPass(THREE.PostProcessShader);
+        this.shader.renderToScreen = true;
+
+        this.composer.addPass(this.shader);
+
+        this.logo = new Logo(logoFont);
+
+        this.count = 0;
+        this.transitionCount = -1;
+        this.maxTransitionCount = 40;
+    }
+
+
+
+    initCursor(){
+        if(!this.stage || !(this.stage instanceof StageBase))return;
+        const selector = new THREE.Geometry();
+        selector.vertices.push(
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(1,1,0),
+            new THREE.Vector3(1 + 0.1,1 - 0.1,0),
+            new THREE.Vector3(0.1 * Math.sqrt(2),0,0),
+            new THREE.Vector3(1 + 0.1,-1 + 0.1,0),
+            new THREE.Vector3(1,-1,0),
+            new THREE.Vector3(0,0,0),
+        );
+        const cursorL = new THREE.Line(selector,new THREE.LineBasicMaterial({
+            color: 0x777777
+        }));
+        const cursorR = new THREE.Line(selector,new THREE.LineBasicMaterial({
+            color: 0x777777
+        }));
+        cursorR.rotation.y = Math.PI;
+        cursorL.position.z = -10;
+        cursorL.position.x = -width * 0.0047;
+        cursorL.scale.set(0.2,0.2,0.2);
+        cursorR.position.z = -10;
+        cursorR.position.x = width * 0.0047;
+        cursorR.scale.set(0.2,0.2,0.2);
+        this.stage.camera.add(cursorL);
+        this.stage.camera.add(cursorR);
+    }
+
+    setStage(stage) {
+        if(!(stage instanceof StageBase)){
+            console.log("It's not stage instance!");
+            return;
+        }
+        if(this.stage) {
+            this.nextStage = stage;
+            this.transitionCount = this.maxTransitionCount;
+            this.nextStage.camera.add(this.logo.textMesh);
+        }
+        else{
+            this.stage = stage;
+            this.composer.addPass(new THREE.RenderPass(this.stage.scene, this.stage.camera));
+            this.transitionCount = 0;
+            this.stage.camera.add(this.logo.textMesh);
+            this.initCursor();
+        }
+    }
+
+    update(){
+        if(!this.stage)return;
+        this.stage.update(this.count);
+        this.logo.update();
+        if(this.transitionCount >= 0){
+            if(this.nextStage && this.transitionCount === this.maxTransitionCount / 2){
+                this.stage = this.nextStage;
+                this.composer.passes[1] = new THREE.RenderPass(this.stage.scene, this.stage.camera);
+                this.nextStage = null;
+                this.initCursor();
+            }
+            let c = this.maxTransitionCount / 2 - Math.abs(this.transitionCount - this.maxTransitionCount / 2);
+            c *= 3;
+            c = c > this.maxTransitionCount ? this.maxTransitionCount  : c;
+            this.shader.material.uniforms.u_glitch_time.value = 20 + c * 3;
+            this.shader.material.uniforms.u_glitch_slide.value = 0.05 + c / 60.0;
+            this.shader.material.uniforms.u_glitch_slide_p.value = 0.2 + c / 60.0;
+            this.shader.material.uniforms.u_noise_alpha.value = 0.05 + c / 30.0;
+            this.shader.material.uniforms.u_noise_height.value = 10 + c * 2;
+            console.log(c,this.transitionCount);
+            --this.transitionCount;
+        }
+        this.composer.render();
+        ++this.shader.material.uniforms.u_count.value;
+        ++this.count;
+    }
+}
+
+
 
 
 const fontLoader = new THREE.FontLoader();
@@ -287,133 +425,20 @@ const height = window.innerHeight;
 window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font) => {
     console.log(document.querySelector('#main'));
 
-    const renderer = new THREE.WebGLRenderer({
-        canvas:document.querySelector('#main'),
-        antialias:true
-    });
+    const page = new Page(width,height,font);
 
-    renderer.setSize(width, height);
-    const composer = new THREE.EffectComposer(renderer);
-
-    const camera = new THREE.PerspectiveCamera(45, width / height,5,100000);
-    camera.position.set(0, 300, 0);
-    camera.lookAt(0,300,10);
-
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x000000,2000,4000);
-
-    const renderPass = new THREE.RenderPass(scene,camera);
-    const ppv = $.ajax({
-        type:'GET',
-        url:'./shader/vertex.vert',
-        async:false
-    }).responseText;
-
-    const ppf = $.ajax({
-        type:'GET',
-        url:'./shader/fragment.frag',
-        async:false
-    }).responseText;
-
-    THREE.PostProcessShader = {
-        uniforms:{
-            "u_count":{
-                value:0
-            },
-            "u_glitch_slide":{
-                value:0.05
-            },
-            "u_glitch_slide_p":{
-                value:0.2
-            },
-            "u_glitch_time":{
-                value:20
-            },
-            "u_noise_alpha":{
-                value:0.05
-            },
-            "u_noise_height":{
-                value:10
-            },
-            "tDiffuse":{
-                value:null
-            }
-        },
-        vertexShader:ppv,
-        fragmentShader:ppf
-    };
-
-    const selector = new THREE.Geometry();
-    selector.vertices.push(
-        new THREE.Vector3(0,0,0),
-        new THREE.Vector3(1,1,0),
-        new THREE.Vector3(1 + 0.1,1 - 0.1,0),
-        new THREE.Vector3(0.1 * Math.sqrt(2),0,0),
-        new THREE.Vector3(1 + 0.1,-1 + 0.1,0),
-        new THREE.Vector3(1,-1,0),
-        new THREE.Vector3(0,0,0),
-        );
-    const selectorL = new THREE.Line(selector,new THREE.LineBasicMaterial({
-        color: 0x777777
-    }));
-    const selectorR = new THREE.Line(selector,new THREE.LineBasicMaterial({
-        color: 0x777777
-    }));
-    selectorR.rotation.y = Math.PI;
-    selectorL.position.z = -10;
-    selectorL.position.x = -width * 0.0047;
-    selectorL.scale.set(0.2,0.2,0.2);
-    selectorR.position.z = -10;
-    selectorR.position.x = width * 0.0047;
-    selectorR.scale.set(0.2,0.2,0.2);
-    camera.add(selectorL);
-    camera.add(selectorR);
-
-    const wbStage = new GoroGoroCubeStage(scene,camera);
-
-
-    const logo = new Logo(font);
-    camera.add(logo.textMesh);
-
-    scene.add(camera);
-
-    const shaderPass = new THREE.ShaderPass(THREE.PostProcessShader);
-    shaderPass.renderToScreen = true;
-    composer.addPass(renderPass);
-    composer.addPass(shaderPass);
-    console.log(shaderPass);
-
-    let count = 0;
+    const wbStage = new WireBaseStage();
+    page.setStage(wbStage);
+    page.logo.updateText("devne.co");
     const update = () => {
-         wbStage.update(count);
-          if(count ===  0)logo.updateText("XcegFmf");
-          if(count ===  30)logo.updateText("devne.co");
-          if(count >= 280 && count <= 320){
-              let c1 = 20 - Math.abs(count - 300);
-              c1 = c1 > 10 ? 30 : c1 * 3;
-              console.log(c1);
-              shaderPass.material.uniforms.u_glitch_time.value = 20 + c1 * 3;
-              shaderPass.material.uniforms.u_glitch_slide.value = 0.05 + c1 / 60.0;
-              shaderPass.material.uniforms.u_glitch_slide_p.value = 0.2 + c1 / 60.0;
-              shaderPass.material.uniforms.u_noise_alpha.value = 0.05 + c1 / 30.0;
-              shaderPass.material.uniforms.u_noise_height.value = 10 + c1 * 3;
-          }
-          if(count ===  300){
-              logo.updateText("Member");
-          }
-          console.log(shaderPass.material.uniforms.u_high_count);
-        logo.update();
-      //  camera.rotation.y += 0.01;
-    //    camera.position.z += 10;
-       // renderer.render(scene, camera);
-       // THREE.PostProcessShader.uniforms.uTime.value = Math.random();
-          ++shaderPass.material.uniforms.u_count.value;
-     //   console.log(THREE.PostProcessShader.uniforms.uTime);
-
-       // composer.renderer.clear();
-        composer.render();
+        page.update();
+        if(page.count === 300){
+            page.setStage(new CubeCylinderStage());
+        }
+        else if(page.count === 330){
+            page.logo.updateText("Member");
+        }
         requestAnimationFrame(update);
-        ++count;
     };
     update();
 }));
