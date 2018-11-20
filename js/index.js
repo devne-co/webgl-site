@@ -34,6 +34,9 @@ THREE.PostProcessShader = {
     }).responseText
 };
 
+const width = window.innerWidth;
+const height = window.innerHeight;
+
 
 /*const ppv = $.ajax({
     type:'GET',
@@ -288,7 +291,7 @@ class Logo{
         this.font = font;
         this.textGeo = new THREE.TextGeometry(this.rtext.now,{
             font:font,
-            size:0.5,
+            size:40,
             height:0.01,
             curveSegments: 12
         });
@@ -296,13 +299,13 @@ class Logo{
             color: 0x777777
         }));
         this.textMesh.geometry.center();
-        this.textMesh.position.z = -10;
+        this.textMesh.rotation.z = Math.PI;
     }
 
     update(){
         this.textMesh.geometry = new THREE.EdgesGeometry(new THREE.TextGeometry(this.rtext.update(),{
             font:this.font,
-            size:0.5,
+            size:40,
             height:0.01,
             curveSegments: 1
         }));
@@ -314,34 +317,12 @@ class Logo{
     }
 }
 
-class Page{
-    constructor(width,height,logoFont){
-        const renderer = new THREE.WebGLRenderer({
-            canvas:document.querySelector('#main'),
-            antialias:true
-        });
-        renderer.setSize(width, height);
-
-        this.composer = new THREE.EffectComposer(renderer);
-
-        this.shader = new THREE.ShaderPass(THREE.PostProcessShader);
-        this.shader.renderToScreen = true;
-
-        this.composer.addPass(this.shader);
-
-        this.logo = new Logo(logoFont);
-
-        this.count = 0;
-        this.transitionCount = -1;
-        this.maxTransitionCount = 40;
-    }
-
-
-
-    initCursor(){
-        if(!this.stage || !(this.stage instanceof StageBase))return;
-        const selector = new THREE.Geometry();
-        selector.vertices.push(
+class OverlayHUD extends HUD{
+    constructor(page,font){
+        super(document.getElementById('main'),font);
+        this.page = page;
+        const cursor = new THREE.Geometry();
+        cursor.vertices.push(
             new THREE.Vector3(0,0,0),
             new THREE.Vector3(1,1,0),
             new THREE.Vector3(1 + 0.1,1 - 0.1,0),
@@ -350,62 +331,131 @@ class Page{
             new THREE.Vector3(1,-1,0),
             new THREE.Vector3(0,0,0),
         );
-        const cursorL = new THREE.Line(selector,new THREE.LineBasicMaterial({
+        cursor.center();
+        const cursorL = new THREE.Line(cursor,new THREE.LineBasicMaterial({
+            color: 0xffffff
+        }));
+        const cursorR = new THREE.Line(cursor,new THREE.LineBasicMaterial({
             color: 0x777777
         }));
-        const cursorR = new THREE.Line(selector,new THREE.LineBasicMaterial({
-            color: 0x777777
-        }));
-        cursorR.rotation.y = Math.PI;
-        cursorL.position.z = -10;
-        cursorL.position.x = -width * 0.0047;
-        cursorL.scale.set(0.2,0.2,0.2);
-        cursorR.position.z = -10;
-        cursorR.position.x = width * 0.0047;
-        cursorR.scale.set(0.2,0.2,0.2);
-        this.stage.camera.add(cursorL);
-        this.stage.camera.add(cursorR);
+        cursorL.rotation.y = Math.PI;
+        cursorL.position.x = (width / 2) * 0.9;
+        cursorL.scale.set(30,30,30);
+        cursorR.position.x = -(width / 2) * 0.9;
+        cursorR.scale.set(30,30,30);
+        this.addParts(cursorL,() => {
+            this.page.prevStage();
+        });
+        this.addParts(cursorR,() => {
+            this.page.nextStage();
+        });
+        this.logo = new Logo(this.font);
+        this.isLogoChanging = false;
+        this.addParts(this.logo.textMesh,() => {
+            if(this.isLogoChanging)return;
+            this.isLogoChanging = true;
+            let c = [];
+            let r = Math.random() * 5 + 5;
+            let base = this.logo.rtext.base;
+            for (let i = 0;i < r;++i){
+                c.push(String.fromCharCode(32 + parseInt(Math.random() * 90)));
+            }
+            this.logo.updateText(c.join(""));
+            console.log(c.join(""),base);
+            setTimeout(() => {
+                this.logo.updateText(base);
+                this.isLogoChanging = false;
+            },200);
+        });
     }
 
-    setStage(stage) {
-        if(!(stage instanceof StageBase)){
-            console.log("It's not stage instance!");
-            return;
+    update(count){
+        this.logo.update();
+    }
+}
+
+class Page{
+    constructor(width,height,font,...stages){
+        const renderer = new THREE.WebGLRenderer({
+            canvas:document.querySelector('#main'),
+            antialias:true
+        });
+        renderer.setSize(width, height);
+
+        console.log(stages);
+
+        this.hud = new OverlayHUD(this,font);
+        this.stages = stages;
+
+        this.composer = new THREE.EffectComposer(renderer);
+
+        this.shader = new THREE.ShaderPass(THREE.PostProcessShader);
+        this.shader.renderToScreen = true;
+
+        this.nowStageIndex = 0;
+        this.nextStageIndex = -1;
+
+        this.composer.addPass(this.shader);
+        this.composer.addPass(this.getNowStage().renderPath);
+        this.composer.addPass(this.hud.renderPath);
+
+        this.stageRendererPathIndex = 1;
+
+        this.count = 0;
+        this.transitionCount = -1;
+        this.maxTransitionCount = 40;
+    }
+
+    prevStage(){
+        if(this.nextStageIndex >= 0)return;
+        if(this.nowStageIndex === 0){
+            this.nextStageIndex = this.stages.length - 1;
         }
-        if(this.stage) {
-            this.nextStage = stage;
-            this.transitionCount = this.maxTransitionCount;
-            this.nextStage.camera.add(this.logo.textMesh);
+        else this.nextStageIndex = this.nowStageIndex - 1;
+        this.transitionCount = this.maxTransitionCount;
+    }
+
+    nextStage(){
+        if(this.nextStageIndex >= 0)return;
+        if(this.nowStageIndex + 1 === this.stages.length){
+            this.nextStageIndex = 0;
+        }
+        else this.nextStageIndex = this.nowStageIndex + 1;
+        this.transitionCount = this.maxTransitionCount;
+    }
+
+    getNowStage(){
+        return this.stages[this.nowStageIndex];
+    }
+
+    changeStage(){
+        this.nowStageIndex = this.nextStageIndex;
+        console.log(this.nowStageIndex);
+        this.nextStageIndex = -1;
+        if(this.nowStageIndex === 0){
+            this.hud.logo.updateText("devne.co",5);
         }
         else{
-            this.stage = stage;
-            this.composer.addPass(new THREE.RenderPass(this.stage.scene, this.stage.camera));
-            this.transitionCount = 0;
-            this.stage.camera.add(this.logo.textMesh);
-            this.initCursor();
+            this.hud.logo.updateText("Member");
         }
+        this.composer.passes[this.stageRendererPathIndex] = this.getNowStage().renderPath;
     }
 
     update(){
-        if(!this.stage)return;
-        this.stage.update(this.count);
-        this.logo.update();
+        this.getNowStage().update(this.count);
+        this.hud.update(this.count);
         if(this.transitionCount >= 0){
-            if(this.nextStage && this.transitionCount === this.maxTransitionCount / 2){
-                this.stage = this.nextStage;
-                this.composer.passes[1] = new THREE.RenderPass(this.stage.scene, this.stage.camera);
-                this.nextStage = null;
-                this.initCursor();
+            if(this.transitionCount === this.maxTransitionCount / 2){
+                this.changeStage();
             }
             let c = this.maxTransitionCount / 2 - Math.abs(this.transitionCount - this.maxTransitionCount / 2);
-            c *= 3;
-            c = c > this.maxTransitionCount ? this.maxTransitionCount  : c;
+            c *= (c / this.maxTransitionCount) * 6;
+            c = c > this.maxTransitionCount * 2 ? this.maxTransitionCount * 2 : c;
             this.shader.material.uniforms.u_glitch_time.value = 20 + c * 3;
             this.shader.material.uniforms.u_glitch_slide.value = 0.05 + c / 60.0;
             this.shader.material.uniforms.u_glitch_slide_p.value = 0.2 + c / 60.0;
             this.shader.material.uniforms.u_noise_alpha.value = 0.05 + c / 30.0;
             this.shader.material.uniforms.u_noise_height.value = 10 + c * 2;
-            console.log(c,this.transitionCount);
             --this.transitionCount;
         }
         this.composer.render();
@@ -419,25 +469,13 @@ class Page{
 
 const fontLoader = new THREE.FontLoader();
 
-const width = window.innerWidth;
-const height = window.innerHeight;
-
 window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font) => {
     console.log(document.querySelector('#main'));
 
-    const page = new Page(width,height,font);
+    const page = new Page(width,height,font,new WireBaseStage(),new CubeCylinderStage());
 
-    const wbStage = new WireBaseStage();
-    page.setStage(wbStage);
-    page.logo.updateText("devne.co");
     const update = () => {
         page.update();
-        if(page.count === 300){
-            page.setStage(new CubeCylinderStage());
-        }
-        else if(page.count === 330){
-            page.logo.updateText("Member");
-        }
         requestAnimationFrame(update);
     };
     update();
