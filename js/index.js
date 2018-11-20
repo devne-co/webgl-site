@@ -227,7 +227,7 @@ class WireBaseStage extends StageBase{
         super();
         this.wireBase = new WireGround(100,20,50,this.scene);
         this.camera.position.y = 200;
-        this.camera.lookAt(0,150,3000);
+        this.camera.lookAt(0,200,3000);
 
         this.scene.fog = new THREE.Fog(0x000000,2000,4000);
     }
