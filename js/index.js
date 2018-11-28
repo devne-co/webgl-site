@@ -1,3 +1,5 @@
+"use strict";
+
 THREE.PostProcessShader = {
     uniforms:{
         "u_count":{
@@ -285,31 +287,52 @@ class RandomString{
     }
 }
 
-class Logo{
+class Logo extends HUDParts{
     constructor(font){
+        super(font);
         this.rtext = new RandomString("devne.co","???????",0.005,0.5,5);
-        this.font = font;
         this.textGeo = new THREE.TextGeometry(this.rtext.now,{
             font:font,
             size:40,
             height:0.01,
             curveSegments: 12
         });
-        this.textMesh = new THREE.LineSegments(new THREE.EdgesGeometry(this.textGeo),new THREE.LineBasicMaterial({
+        this.textGeo.center();
+        this.mesh = new THREE.LineSegments(new THREE.EdgesGeometry(this.textGeo),new THREE.LineBasicMaterial({
             color: 0x777777
         }));
-        this.textMesh.geometry.center();
-        this.textMesh.rotation.z = Math.PI;
+        this.mesh.rotation.z = Math.PI;
+        this.isRAnimationEnded = true;
     }
 
-    update(){
-        this.textMesh.geometry = new THREE.EdgesGeometry(new THREE.TextGeometry(this.rtext.update(),{
+    onUpdate(tick){
+        this.mesh.geometry = new THREE.EdgesGeometry(new THREE.TextGeometry(this.rtext.update(),{
             font:this.font,
             size:40,
             height:0.01,
             curveSegments: 1
         }));
-        this.textMesh.geometry.center();
+        this.mesh.geometry.center();
+        this.rtext.update();
+    }
+
+    onTapped(){
+        if(this.rtext.isInitialized && this.isRAnimationEnded){
+            let c = [];
+            let r = Math.random() * 5 + 5;
+            let base = this.rtext.base;
+            let fixed = this.rtext.fixed;
+            for (let i = 0;i < r;++i){
+                c.push(String.fromCharCode(32 + parseInt(Math.random() * 90)));
+            }
+            this.updateText(c.join(""));
+            this.isRAnimationEnded = false;
+            setTimeout(() => {
+                if(fixed)this.updateText(base,fixed);
+                else this.updateText(base);
+                this.isRAnimationEnded = true;
+            },200);
+        }
     }
 
     updateText(text,...fixed){
@@ -317,60 +340,58 @@ class Logo{
     }
 }
 
+class CursorParts extends HUDParts{
+    constructor(){
+        super();
+        const cursor = new THREE.Geometry();
+        const w = 0.2;
+        cursor.vertices.push(
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(1,1,0),
+            new THREE.Vector3(1 + w,1 - w,0),
+            new THREE.Vector3(w * 2,0,0),
+            new THREE.Vector3(1 + w,-1 + w,0),
+            new THREE.Vector3(1,-1,0),
+            new THREE.Vector3(0,0,0),
+        );
+        cursor.faces.push(
+            new THREE.Face3(0,1,2),
+            new THREE.Face3(0,2,3),
+            new THREE.Face3(0,3,4),
+            new THREE.Face3(0,4,5),
+            new THREE.Face3(0,2,1),
+            new THREE.Face3(0,3,2),
+            new THREE.Face3(0,4,3),
+            new THREE.Face3(0,5,4)
+        );
+        cursor.center();
+        this.mesh = new THREE.Mesh(cursor,new THREE.MeshBasicMaterial({
+            color:0x777777
+        }));
+        this.mesh.scale.set(30,30,30);
+    }
+}
+
 class OverlayHUD extends HUD{
     constructor(page,font){
         super(document.getElementById('main'),font);
         this.page = page;
-        const cursor = new THREE.Geometry();
-        cursor.vertices.push(
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(1,1,0),
-            new THREE.Vector3(1 + 0.1,1 - 0.1,0),
-            new THREE.Vector3(0.1 * Math.sqrt(2),0,0),
-            new THREE.Vector3(1 + 0.1,-1 + 0.1,0),
-            new THREE.Vector3(1,-1,0),
-            new THREE.Vector3(0,0,0),
-        );
-        cursor.center();
-        const cursorL = new THREE.Line(cursor,new THREE.LineBasicMaterial({
-            color: 0xffffff
-        }));
-        const cursorR = new THREE.Line(cursor,new THREE.LineBasicMaterial({
-            color: 0x777777
-        }));
-        cursorL.rotation.y = Math.PI;
-        cursorL.position.x = (width / 2) * 0.9;
-        cursorL.scale.set(30,30,30);
-        cursorR.position.x = -(width / 2) * 0.9;
-        cursorR.scale.set(30,30,30);
-        this.addParts(cursorL,() => {
-            this.page.prevStage();
-        });
-        this.addParts(cursorR,() => {
-            this.page.nextStage();
-        });
-        this.logo = new Logo(this.font);
-        this.isLogoChanging = false;
-        this.addParts(this.logo.textMesh,() => {
-            if(this.isLogoChanging)return;
-            this.isLogoChanging = true;
-            let c = [];
-            let r = Math.random() * 5 + 5;
-            let base = this.logo.rtext.base;
-            for (let i = 0;i < r;++i){
-                c.push(String.fromCharCode(32 + parseInt(Math.random() * 90)));
-            }
-            this.logo.updateText(c.join(""));
-            console.log(c.join(""),base);
-            setTimeout(() => {
-                this.logo.updateText(base);
-                this.isLogoChanging = false;
-            },200);
-        });
-    }
 
-    update(count){
-        this.logo.update();
+        const cursorL = new CursorParts();
+        cursorL.mesh.rotation.y = Math.PI;
+        cursorL.mesh.position.x = (width / 2) * 0.9;
+        cursorL.onTapped = () => {
+            this.page.prevStage();
+        };
+
+        const cursorR = new CursorParts();
+        cursorR.mesh.position.x = -(width / 2) * 0.9;
+        cursorR.onTapped = () => {
+            this.page.nextStage();
+        };
+
+        this.logo = new Logo(this.font);
+        this.addParts(cursorL,cursorR,this.logo);
     }
 }
 
@@ -481,6 +502,3 @@ window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font
     update();
 }));
 
-function createCamera() {
-
-}
