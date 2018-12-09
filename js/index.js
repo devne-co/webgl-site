@@ -36,8 +36,21 @@ THREE.PostProcessShader = {
     }).responseText
 };
 
-const width = window.innerWidth;
-const height = window.innerHeight;
+let width = window.innerWidth;
+let height = window.innerHeight;
+let aspect = width / height;
+
+const createRandStr = (min,max) => {
+    let c = [];
+    let r = Math.random() * (max - min) + min;
+    for (let i = 0;i < r;++i){
+        c.push(String.fromCharCode(32 + parseInt(Math.random() * 90)));
+    }
+    return c.join("");
+};
+
+
+
 
 
 /*const ppv = $.ajax({
@@ -205,6 +218,7 @@ class CubeCylinder{
     }
 }
 
+
 class CubeCylinderStage extends StageBase{
     constructor() {
         super();
@@ -216,12 +230,17 @@ class CubeCylinderStage extends StageBase{
 
     }
 
-    update(count){
+    onUpdate(count){
         if((count % 5) === 0)this.cubeCylinder.next();
         this.camera.position.z += this.cubeCylinder.l / 5;
         this.camera.rotation.z += Math.PI * 2 / 1000;
     }
 
+    onResized(width,height){
+        super.onResized(width,height);
+        const t = Math.sqrt(1080.0 / width);
+        this.camera.scale.set(t,t,t);
+    }
 }
 
 class WireBaseStage extends StageBase{
@@ -230,13 +249,16 @@ class WireBaseStage extends StageBase{
         this.wireBase = new WireGround(100,20,50,this.scene);
         this.camera.position.y = 200;
         this.camera.lookAt(0,200,3000);
-
         this.scene.fog = new THREE.Fog(0x000000,2000,4000);
     }
 
-    update(count){
+    onUpdate(count){
         if((count % 5) === 0)this.wireBase.next();
         this.camera.position.z += 20;
+    }
+
+    onResized(width,height){
+        super.onResized(width,height);
     }
 }
 
@@ -291,9 +313,10 @@ class Logo extends HUDParts{
     constructor(font){
         super(font);
         this.rtext = new RandomString("devne.co","???????",0.005,0.5,5);
+        this.textSize = 0;
         this.textGeo = new THREE.TextGeometry(this.rtext.now,{
             font:font,
-            size:40,
+            size:this.textSize,
             height:0.01,
             curveSegments: 12
         });
@@ -302,13 +325,14 @@ class Logo extends HUDParts{
             color: 0x777777
         }));
         this.mesh.rotation.z = Math.PI;
+        this.mesh.rotation.y = Math.PI;
         this.isRAnimationEnded = true;
     }
 
     onUpdate(tick){
         this.mesh.geometry = new THREE.EdgesGeometry(new THREE.TextGeometry(this.rtext.update(),{
             font:this.font,
-            size:40,
+            size:this.textSize,
             height:0.01,
             curveSegments: 1
         }));
@@ -316,16 +340,15 @@ class Logo extends HUDParts{
         this.rtext.update();
     }
 
+    onResized(width,height){
+        this.textSize = width / 60.0 + 15;
+    }
+
     onTapped(){
         if(this.rtext.isInitialized && this.isRAnimationEnded){
-            let c = [];
-            let r = Math.random() * 5 + 5;
             let base = this.rtext.base;
             let fixed = this.rtext.fixed;
-            for (let i = 0;i < r;++i){
-                c.push(String.fromCharCode(32 + parseInt(Math.random() * 90)));
-            }
-            this.updateText(c.join(""));
+            this.updateText(createRandStr(5,10));
             this.isRAnimationEnded = false;
             setTimeout(() => {
                 if(fixed)this.updateText(base,fixed);
@@ -337,6 +360,10 @@ class Logo extends HUDParts{
 
     updateText(text,...fixed){
         this.rtext = new RandomString(text,this.rtext.now,this.rtext.rate,this.rtext.initRate,fixed);
+    }
+
+    setText(text,...fixed){
+        this.rtext = new RandomString(text,text,this.rtext.rate,this.rtext.initRate,fixed);
     }
 }
 
@@ -368,26 +395,109 @@ class CursorParts extends HUDParts{
         this.mesh = new THREE.Mesh(cursor,new THREE.MeshBasicMaterial({
             color:0x777777
         }));
-        this.mesh.scale.set(30,30,30);
+        this.mesh.scale.set(1,1,1);
+    }
+
+}
+
+class MemberParts extends HUDParts{
+    constructor(){
+        super();
+        this.geometry = new THREE.Geometry();
+        this.frameWidth = 0.05;
+       /* this.geometry.vertices.push(
+            new THREE.Vector3(-1,-1,0),
+            new THREE.Vector3(-1,1,0),
+            new THREE.Vector3(1,1,0),
+            new THREE.Vector3(1,-1,0),
+            new THREE.Vector3(-1,-1,0),
+            new THREE.Vector3(-(1 - this.frameWidth),-(1 - this.frameWidth),0),
+            new THREE.Vector3(-(1 - this.frameWidth),(1 - this.frameWidth),0),
+            new THREE.Vector3((1 - this.frameWidth),(1 - this.frameWidth),0),
+            new THREE.Vector3((1 - this.frameWidth),-(1 - this.frameWidth),0),
+            new THREE.Vector3(-(1 - this.frameWidth),-(1 - this.frameWidth),0)
+        );*/
+        this.geometry.vertices.push(
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,0)
+        );
+        this.geometry.faces.push(
+            new THREE.Face3(0,6,1),
+            new THREE.Face3(6,0,5),
+            new THREE.Face3(1,7,2),
+            new THREE.Face3(7,1,6),
+            new THREE.Face3(2,8,3),
+            new THREE.Face3(8,2,7),
+            new THREE.Face3(3,9,4),
+            new THREE.Face3(9,3,8)
+        );
+        this.mesh = new THREE.Mesh(this.geometry,new THREE.MeshBasicMaterial({
+            color:0x777777,
+            side:THREE.DoubleSide
+        }));
+        this.mesh.rotation.z = Math.PI / 4;
+        this.manager = new KeyFrameManager();
+        this.manager.add(new KeyFrame(this,0,25,(obj,now,duration) => {
+            let t = now / duration;
+            const p = Math.sin(t * Math.PI / 2);
+            obj.geometry.vertices[0].set(-p,-p,0);
+            obj.geometry.vertices[1].set(-p,p,0);
+            obj.geometry.vertices[2].set(p,p,0);
+            obj.geometry.vertices[3].set(p,-p,0);
+            obj.geometry.vertices[4].set(-p,-p,0);
+        }));
+        this.manager.add(new KeyFrame(this,10,35,(obj,now,duration) => {
+            let t = now / duration;
+            const p = Math.sin(t * Math.PI / 2) * (1 - this.frameWidth);
+            obj.geometry.vertices[5].set(-p,-p,0);
+            obj.geometry.vertices[6].set(-p,p,0);
+            obj.geometry.vertices[7].set(p,p,0);
+            obj.geometry.vertices[8].set(p,-p,0);
+            obj.geometry.vertices[9].set(-p,-p,0);
+        }));
+    }
+
+    onUpdate(tick){
+        this.manager.update();
+
+        this.geometry.verticesNeedUpdate = true;
+        this.geometry.elementsNeedUpdate = true;
+        this.geometry.computeFaceNormals();
     }
 }
 
-class OverlayHUD extends HUD{
+class SelectorHud extends HUDBase{
     constructor(page,font){
         super(document.getElementById('main'),font);
         this.page = page;
 
         const cursorL = new CursorParts();
         cursorL.mesh.rotation.y = Math.PI;
-        cursorL.mesh.position.x = (width / 2) * 0.9;
         cursorL.onTapped = () => {
-            this.page.prevStage();
+            this.page.prevFrame();
+        };
+        cursorL.onResized = (width,height) => {
+            cursorL.mesh.position.x = (width / 2) * 0.9;
+            const t = width / 80.0 + 10.0;
+            cursorL.mesh.scale.set(t,t,t);
         };
 
         const cursorR = new CursorParts();
-        cursorR.mesh.position.x = -(width / 2) * 0.9;
         cursorR.onTapped = () => {
-            this.page.nextStage();
+            this.page.nextFrame();
+        };
+        cursorR.onResized = (width,height) => {
+            cursorR.mesh.position.x = -(width / 2) * 0.9;
+            const t = width / 80.0 + 10.0;
+            cursorR.mesh.scale.set(t,t,t);
         };
 
         this.logo = new Logo(this.font);
@@ -395,79 +505,162 @@ class OverlayHUD extends HUD{
     }
 }
 
+class MembersHUD extends SelectorHud{
+    constructor(page,font){
+        super(page,font);
+        this.memberArr = [];
+        for(let i = 0;i < 7;++i){
+            this.memberArr.push(new MemberParts());
+            this.memberArr[i].manager.count = -(20 + i * 2);
+            this.addParts(this.memberArr[i]);
+        }
+        const a = 1.6;
+        const s = a * 1.35 / 2;
+        for(let i = 0;i < 7;++i){
+            this.memberArr[i].onResized = (width,height) => {
+                const k = width / 60.0 + 15;
+                const y = height / 3 + (~(i % 2)) * k * a;
+                const x = (i - 3) * k * a;
+                console.log(i,x,y,this.memberArr[i].count);
+                this.memberArr[i].mesh.position.set(x,y,0);
+                this.memberArr[i].mesh.scale.set(k * s,k * s,k * s);
+            };
+        }
+        this.manager = new KeyFrameManager();
+        this.manager.add(new KeyFrame(this,15,45,(obj,now,duration) => {
+            let t = now / duration;
+            const p = Math.sin(t * Math.PI / 2);
+            obj.logo.mesh.position.y = this.hudCamera.top * p / 2;
+            console.log(obj.logo.mesh.position.y);
+        }));
+    }
+
+    onUpdate(tick){
+        this.manager.update();
+    }
+}
+
+class TopFrame extends FrameBase{
+    constructor(page,font){
+        super(new WireBaseStage(),new SelectorHud(page,font));
+    }
+
+    init(){
+        this.hud.logo.setText(createRandStr(5,10));
+    }
+
+    onOpenEvent(){
+        this.hud.logo.updateText("devne.co");
+    }
+
+    onCloseEvent(){
+        this.hud.logo.updateText(createRandStr(5,10));
+    }
+}
+
+class MembersFrame extends FrameBase{
+    constructor(page,font){
+        super(new CubeCylinderStage(),new MembersHUD(page,font));
+    }
+
+    init(){
+        this.hud.logo.setText(createRandStr(5,20));
+    }
+
+    onOpenEvent(){
+        this.hud.logo.updateText("Members");
+    }
+
+    onCloseEvent(){
+        this.hud.logo.updateText(createRandStr(5,10));
+    }
+}
+
 class Page{
-    constructor(width,height,font,...stages){
+    constructor(width,height,font){
         const renderer = new THREE.WebGLRenderer({
             canvas:document.querySelector('#main'),
             antialias:true
         });
         renderer.setSize(width, height);
 
-        console.log(stages);
+        this.frames = [
+            new TopFrame(this,font),
+            new MembersFrame(this,font)
+        ];
 
-        this.hud = new OverlayHUD(this,font);
-        this.stages = stages;
+        this.frames.forEach((v) => v.onResized(width,height));
 
         this.composer = new THREE.EffectComposer(renderer);
 
         this.shader = new THREE.ShaderPass(THREE.PostProcessShader);
         this.shader.renderToScreen = true;
 
-        this.nowStageIndex = 0;
-        this.nextStageIndex = -1;
+        this.nowFrameIndex = 0;
+        this.nextFrameIndex = -1;
 
         this.composer.addPass(this.shader);
-        this.composer.addPass(this.getNowStage().renderPath);
-        this.composer.addPass(this.hud.renderPath);
-
-        this.stageRendererPathIndex = 1;
+        this.composer.addPass(this.getNowFrame().stage.renderPath);
+        this.composer.addPass(this.getNowFrame().hud.renderPath);
 
         this.count = 0;
         this.transitionCount = -1;
         this.maxTransitionCount = 40;
+
+        window.addEventListener('resize',() => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            renderer.setSize(w,h);
+            for(let i = 0;i < this.frames.length;++i){
+                this.frames[i].onResized(w,h);
+            }
+        });
     }
 
-    prevStage(){
-        if(this.nextStageIndex >= 0)return;
-        if(this.nowStageIndex === 0){
-            this.nextStageIndex = this.stages.length - 1;
+    prevFrame(){
+        if(this.nextFrameIndex >= 0)return;
+        if(this.nowFrameIndex === 0){
+            this.nextFrameIndex = this.frames.length - 1;
         }
-        else this.nextStageIndex = this.nowStageIndex - 1;
+        else this.nextFrameIndex = this.nowFrameIndex - 1;
         this.transitionCount = this.maxTransitionCount;
+
+        this.getNowFrame().onCloseEvent();
+        this.frames[this.nextFrameIndex].init();
     }
 
-    nextStage(){
-        if(this.nextStageIndex >= 0)return;
-        if(this.nowStageIndex + 1 === this.stages.length){
-            this.nextStageIndex = 0;
+    nextFrame(){
+        if(this.nextFrameIndex >= 0)return;
+        if(this.nowFrameIndex + 1 === this.frames.length){
+            this.nextFrameIndex = 0;
         }
-        else this.nextStageIndex = this.nowStageIndex + 1;
+        else this.nextFrameIndex = this.nowFrameIndex + 1;
         this.transitionCount = this.maxTransitionCount;
+
+        this.getNowFrame().onCloseEvent();
+        this.frames[this.nextFrameIndex].init();
     }
 
-    getNowStage(){
-        return this.stages[this.nowStageIndex];
+    getNowFrame(){
+        return this.frames[this.nowFrameIndex];
     }
 
-    changeStage(){
-        this.nowStageIndex = this.nextStageIndex;
-        console.log(this.nowStageIndex);
-        this.nextStageIndex = -1;
-        if(this.nowStageIndex === 0){
-            this.hud.logo.updateText("devne.co",5);
-        }
-        else{
-            this.hud.logo.updateText("Member");
-        }
-        this.composer.passes[this.stageRendererPathIndex] = this.getNowStage().renderPath;
+    changeFrame(){
+        this.getNowFrame().deinit();
+        this.nowFrameIndex = this.nextFrameIndex;
+        this.getNowFrame().onOpenEvent();
+
+        console.log(this.nowFrameIndex);
+        this.nextFrameIndex = -1;
+        this.composer.passes[1] = this.getNowFrame().stage.renderPath;
+        this.composer.passes[2] = this.getNowFrame().hud.renderPath;
     }
 
     update(){
-        this.getNowStage().update(this.count);
-        this.hud.update(this.count);
+        this.getNowFrame().onUpdate(this.count);
         if(this.transitionCount >= 0){
             if(this.transitionCount === this.maxTransitionCount / 2){
-                this.changeStage();
+                this.changeFrame();
             }
             let c = this.maxTransitionCount / 2 - Math.abs(this.transitionCount - this.maxTransitionCount / 2);
             c *= (c / this.maxTransitionCount) * 6;
@@ -493,7 +686,7 @@ const fontLoader = new THREE.FontLoader();
 window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font) => {
     console.log(document.querySelector('#main'));
 
-    const page = new Page(width,height,font,new WireBaseStage(),new CubeCylinderStage());
+    const page = new Page(width,height,font);
 
     const update = () => {
         page.update();
