@@ -82,7 +82,7 @@ class HUDBase extends HUDParts{
         super(font);
         this.canvas = canvas;
         this.hudCamera = new THREE.OrthographicCamera(-window.innerWidth / 2, window.innerWidth / 2, -window.innerHeight / 2, window.innerHeight / 2, 5, 1000);
-        this.hudCamera.position.z = 10;
+        this.hudCamera.position.z = 100;
         //this.hudCamera.rotation.y = Math.PI;
         this.hudScene = new THREE.Scene();
         this.renderPath = new THREE.RenderPass(this.hudScene, this.hudCamera);
@@ -95,8 +95,9 @@ class HUDBase extends HUDParts{
                 return intersects;
             }
             for (let i = 0; i < parts.length; ++i) {
-              //  console.log(parts[i]);
-                if (this.rayCaster.intersectObject(parts[i].mesh).length > 0) intersects.push(parts[i]);
+                if(parts[i].mesh && this.rayCaster.intersectObject(parts[i].mesh,true).length > 0){
+                    intersects.push(parts[i]);
+                }
             }
             intersects.sort((a, b) => {
                 return a.distance - b.distance;
@@ -168,8 +169,12 @@ class FrameBase{
 
     }
 
-    deinit(){
+    deInit(){
 
+    }
+
+    static create(stageBase,hudBase){
+        return new this(stageBase,hudBase);
     }
 }
 

@@ -395,7 +395,12 @@ class CursorParts extends HUDParts{
         this.mesh = new THREE.Mesh(cursor,new THREE.MeshBasicMaterial({
             color:0x777777
         }));
-        this.mesh.scale.set(1,1,1);
+
+        const boundingBox = new THREE.Mesh(new THREE.CubeGeometry(2,4,1),new THREE.MeshBasicMaterial({
+            color:0x111111
+        }));
+        boundingBox.material.visible = false;
+        this.mesh.add(boundingBox);
     }
 
 }
@@ -578,20 +583,29 @@ class MembersFrame extends FrameBase{
 
 class Page{
     constructor(width,height,font){
-        const renderer = new THREE.WebGLRenderer({
+        this.renderer = new THREE.WebGLRenderer({
             canvas:document.querySelector('#main'),
             antialias:true
         });
-        renderer.setSize(width, height);
+        this.renderer.setSize(width, height);
+
+        this.font = font;
 
         this.frames = [
-            new TopFrame(this,font),
-            new MembersFrame(this,font)
+            TopFrame,
+            MembersFrame
         ];
 
-        this.frames.forEach((v) => v.onResized(width,height));
+        this.nowFrame = this.frames[0].create(this,font);
+        this.nowFrame.onResized(width,height);
+        this.nowFrame.init();
+        this.nowFrame.onOpenEvent();
 
-        this.composer = new THREE.EffectComposer(renderer);
+        this.nextFrame = null;
+
+      //  this.frames.forEach((v) => v.onResized(width,height));
+
+        this.composer = new THREE.EffectComposer(this.renderer);
 
         this.shader = new THREE.ShaderPass(THREE.PostProcessShader);
         this.shader.renderToScreen = true;
@@ -610,10 +624,8 @@ class Page{
         window.addEventListener('resize',() => {
             const w = window.innerWidth;
             const h = window.innerHeight;
-            renderer.setSize(w,h);
-            for(let i = 0;i < this.frames.length;++i){
-                this.frames[i].onResized(w,h);
-            }
+            this.renderer.setSize(w,h);
+            this.nowFrame.onResized(w,h);
         });
     }
 
@@ -626,7 +638,7 @@ class Page{
         this.transitionCount = this.maxTransitionCount;
 
         this.getNowFrame().onCloseEvent();
-        this.frames[this.nextFrameIndex].init();
+        this.createNextFrame(this.nextFrameIndex);
     }
 
     nextFrame(){
@@ -638,22 +650,50 @@ class Page{
         this.transitionCount = this.maxTransitionCount;
 
         this.getNowFrame().onCloseEvent();
-        this.frames[this.nextFrameIndex].init();
+        this.createNextFrame(this.nextFrameIndex);
     }
 
     getNowFrame(){
-        return this.frames[this.nowFrameIndex];
+        return this.nowFrame;
     }
 
     changeFrame(){
-        this.getNowFrame().deinit();
+        if(this.getNowFrame()){
+            this.getNowFrame().deInit();
+         //   window.removeEventListener('resize',this.nowResizedEvent);
+        }
+        this.nowFrame = this.nextFrame;
+       /* this.nowResizedEvent = () => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            this.renderer.setSize(w,h);
+            this.nowFrame.onResized(w,h);
+        };*/
         this.nowFrameIndex = this.nextFrameIndex;
+
         this.getNowFrame().onOpenEvent();
 
         console.log(this.nowFrameIndex);
         this.nextFrameIndex = -1;
+        this.nextFrame = null;
+
         this.composer.passes[1] = this.getNowFrame().stage.renderPath;
         this.composer.passes[2] = this.getNowFrame().hud.renderPath;
+    }
+
+    createNextFrame(index) {
+        this.nextFrame = this.frames[index].create(this, this.font);
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        this.nextFrame.onResized(w, h);
+        this.nextFrame.init();
+       /* this.nowResizedEvent = () => {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            this.renderer.setSize(w,h);
+            this.nowFrame.onResized(w,h);
+        };
+        window.addEventListener('resize',this.nowResizedEvent);*/
     }
 
     update(){
