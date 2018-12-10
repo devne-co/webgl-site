@@ -487,7 +487,7 @@ class SelectorHud extends HUDBase{
         const cursorL = new CursorParts();
         cursorL.mesh.rotation.y = Math.PI;
         cursorL.onTapped = () => {
-            this.page.prevFrame();
+            this.page.moveToPrevFrame();
         };
         cursorL.onResized = (width,height) => {
             cursorL.mesh.position.x = (width / 2) * 0.9;
@@ -497,7 +497,7 @@ class SelectorHud extends HUDBase{
 
         const cursorR = new CursorParts();
         cursorR.onTapped = () => {
-            this.page.nextFrame();
+            this.page.moveToNextFrame();
         };
         cursorR.onResized = (width,height) => {
             cursorR.mesh.position.x = -(width / 2) * 0.9;
@@ -629,7 +629,7 @@ class Page{
         });
     }
 
-    prevFrame(){
+    moveToPrevFrame(){
         if(this.nextFrameIndex >= 0)return;
         if(this.nowFrameIndex === 0){
             this.nextFrameIndex = this.frames.length - 1;
@@ -641,7 +641,7 @@ class Page{
         this.createNextFrame(this.nextFrameIndex);
     }
 
-    nextFrame(){
+    moveToNextFrame(){
         if(this.nextFrameIndex >= 0)return;
         if(this.nowFrameIndex + 1 === this.frames.length){
             this.nextFrameIndex = 0;

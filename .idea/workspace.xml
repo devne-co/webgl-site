@@ -70,8 +70,8 @@
           <file leaf-file-name="index.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/js/index.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="291">
-                  <caret line="401" column="12" lean-forward="true" selection-start-line="401" selection-start-column="12" selection-end-line="401" selection-end-column="12" />
+                <state relative-caret-position="979">
+                  <caret line="726" column="22" selection-start-line="726" selection-start-column="22" selection-end-line="726" selection-end-column="22" />
                 </state>
               </provider>
             </entry>
@@ -97,8 +97,8 @@
           <file leaf-file-name="model.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/js/model.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="159">
-                  <caret line="101" column="39" selection-start-line="101" selection-start-column="39" selection-end-line="101" selection-end-column="39" />
+                <state relative-caret-position="114">
+                  <caret line="98" column="46" selection-start-line="98" selection-start-column="46" selection-end-line="98" selection-end-column="46" />
                 </state>
               </provider>
             </entry>
@@ -106,8 +106,8 @@
           <file leaf-file-name="three.min.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/js/three.min.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="14310">
-                  <caret line="954" column="160" selection-start-line="954" selection-start-column="160" selection-end-line="954" selection-end-column="160" />
+                <state relative-caret-position="15">
+                  <caret line="861" column="389" selection-start-line="861" selection-start-column="389" selection-end-line="861" selection-end-column="389" />
                 </state>
               </provider>
             </entry>
@@ -119,8 +119,8 @@
           <file leaf-file-name="model.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/js/model.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="341">
-                  <caret line="101" selection-start-line="101" selection-end-line="101" />
+                <state relative-caret-position="-337">
+                  <caret line="96" column="52" selection-start-line="96" selection-start-column="52" selection-end-line="96" selection-end-column="52" />
                 </state>
               </provider>
             </entry>
@@ -332,16 +332,15 @@
       <workItem from="1543074450110" duration="17294000" />
       <workItem from="1543833937242" duration="5608000" />
       <workItem from="1544194261569" duration="9579000" />
-      <workItem from="1544357633667" duration="18152000" />
+      <workItem from="1544357633667" duration="18427000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="216186000" />
+    <option name="totallyTimeSpent" value="216461000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" id="PlantUML" order="3" />
       <window_info anchor="right" id="Palette" order="3" />
@@ -349,23 +348,23 @@
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50143063" side_tool="true" visible="true" weight="0.36363637" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50143063" side_tool="true" visible="true" weight="0.32969698" />
       <window_info anchor="right" id="Maven Projects" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Floobits" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49928468" weight="0.32969698" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" sideWeight="0.4985694" visible="true" weight="0.32969698" />
       <window_info id="Capture Tool" order="2" />
       <window_info anchor="right" id="Remote Host" order="3" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.47619048" visible="true" weight="0.15879828" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.477396" visible="true" weight="0.15879828" />
       <window_info anchor="right" id="Database" order="3" weight="0.32886904" />
-      <window_info id="Structure" order="1" sideWeight="0.52380955" side_tool="true" visible="true" weight="0.15879828" />
+      <window_info id="Structure" order="1" sideWeight="0.522604" side_tool="true" visible="true" weight="0.15879828" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="right" id="Theme Preview" order="3" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.4985694" visible="true" weight="0.36363637" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4985694" weight="0.36363637" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -609,22 +608,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/three.min.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="14310">
-          <caret line="954" column="160" selection-start-line="954" selection-start-column="160" selection-end-line="954" selection-end-column="160" />
+        <state relative-caret-position="15">
+          <caret line="861" column="389" selection-start-line="861" selection-start-column="389" selection-end-line="861" selection-end-column="389" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/model.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="101" column="39" selection-start-line="101" selection-start-column="39" selection-end-line="101" selection-end-column="39" />
+        <state relative-caret-position="114">
+          <caret line="98" column="46" selection-start-line="98" selection-start-column="46" selection-end-line="98" selection-end-column="46" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="401" column="12" lean-forward="true" selection-start-line="401" selection-start-column="12" selection-end-line="401" selection-end-column="12" />
+        <state relative-caret-position="979">
+          <caret line="726" column="22" selection-start-line="726" selection-start-column="22" selection-end-line="726" selection-end-column="22" />
         </state>
       </provider>
     </entry>
