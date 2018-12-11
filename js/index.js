@@ -222,7 +222,7 @@ class CubeCylinder{
 class CubeCylinderStage extends StageBase{
     constructor() {
         super();
-        this.cubeCylinder = new CubeCylinder(50,1500,30,this.scene);
+        this.cubeCylinder = new CubeCylinder(30,1500,30,this.scene);
         this.camera.position.set(0,0,-1000);
         this.camera.lookAt(0,0,300);
 
@@ -246,7 +246,7 @@ class CubeCylinderStage extends StageBase{
 class WireBaseStage extends StageBase{
     constructor(){
         super();
-        this.wireBase = new WireGround(100,20,50,this.scene);
+        this.wireBase = new WireGround(100,20,20,this.scene);
         this.camera.position.y = 200;
         this.camera.lookAt(0,200,3000);
         this.scene.fog = new THREE.Fog(0x000000,2000,4000);
@@ -409,7 +409,7 @@ class MemberParts extends HUDParts{
     constructor(){
         super();
         this.geometry = new THREE.Geometry();
-        this.frameWidth = 0.05;
+        this.frameWidth = 0.1;
        /* this.geometry.vertices.push(
             new THREE.Vector3(-1,-1,0),
             new THREE.Vector3(-1,1,0),
