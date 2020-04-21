@@ -1,6 +1,11 @@
 "use strict";
+import * as $ from "jQuery";
+import * as Three from "three";
+import * as DevneModel from "./model";
+import {ShaderPass} from "three/examples/jsm/postprocessing/ShaderPass";
+import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
 
-THREE.PostProcessShader = {
+const postProcessShader = {
     uniforms:{
         "u_count":{
             value:0
@@ -40,6 +45,7 @@ let width = window.innerWidth;
 let height = window.innerHeight;
 let aspect = width / height;
 
+//returns random string whose length ranges from $min to $max
 const createRandStr = (min,max) => {
     let c = [];
     let r = Math.random() * (max - min) + min;
@@ -83,10 +89,10 @@ class WireGround{
         this.maxLength = (max + 1) * (n * 2 + 1) * 3;
         this.nowLength = 0;
 
-        this.geometry = new THREE.BufferGeometry();
-        this.geometry.addAttribute('position',new THREE.BufferAttribute(new Float32Array(this.maxLength * 3),3));
+        this.geometry = new Three.BufferGeometry();
+        this.geometry.addAttribute('position',new Three.BufferAttribute(new Float32Array(this.maxLength * 3),3));
 
-        const linemat = new THREE.LineBasicMaterial({
+        const linemat = new Three.LineBasicMaterial({
             color: 0x333333
         });
         for (let i = -n;i <= n;++i){
@@ -104,14 +110,14 @@ class WireGround{
 
         this.geometry.addGroup(0, this.maxCount, 0);
         this.count = max;
-        this.line = new THREE.Line(this.geometry,linemat);
+        this.line = new Three.Line(this.geometry,linemat);
         this.line.frustumCulled = false;
-        console.log(this.geometry.position);
         scene.add(this.line);
     }
 
     next(){
         ++this.count;
+        if(this.count % 4 !== 0)return;
         this.geometry.attributes.position.needsUpdate = true;
         if(this.count > this.maxCount){
             const del = this.n * 6 + 2;//(this.n * 2 + 1) * 2 - 1 + (this.n * 2 + 1);
@@ -131,7 +137,7 @@ class WireGround{
             let y = Math.random() * this.size;
             let z = this.count * this.size + (Math.random() / 2) * this.size;
 
-            const v = new THREE.Vector3(x,y,z);
+            const v = new Three.Vector3(x,y,z);
             arr.unshift(v);
 
             let c = this.nowLength - (this.n - i + 1) * 3 + 1;
@@ -175,13 +181,13 @@ class CubeCylinder{
         this.scene = scene;
         this.squares = [];
         this.l = r * 2 * Math.PI / this.sides;
-        this.cubeGeo = new THREE.CubeGeometry(this.l,this.l,this.l);
-        this.cubeEdgesGeo = new THREE.EdgesGeometry(this.cubeGeo);
+        this.cubeGeo = new Three.BoxGeometry(this.l,this.l,this.l);
+        this.cubeEdgesGeo = new Three.EdgesGeometry(this.cubeGeo);
         this.cubeGeo.center();
-        this.cubeMat = new THREE.LineBasicMaterial({
+        this.cubeMat = new Three.LineBasicMaterial({
             color:0x666666
         });
-        this.cubeInMat = new THREE.MeshBasicMaterial({
+        this.cubeInMat = new Three.MeshBasicMaterial({
             color:0x000000
         });
         for (let i = 0;i < this.max;++i){
@@ -191,42 +197,42 @@ class CubeCylinder{
 
     next(){
         if(this.count >= this.max){
-            this.scene.remove(this.squares[0]);
-            this.squares.shift();
+            this.squares[this.count % this.max].position.z += this.max * this.l;
         }
-        const bigGroup = new THREE.Group();
-        for(let i = 0;i < this.sides;++i){
-            const d = Math.PI * 2 * i / this.sides;
-            const x = Math.cos(d) * this.r;
-            const y = Math.sin(d) * this.r;
-            const z = this.count * this.l;
-            let cube = new THREE.LineSegments(this.cubeEdgesGeo,this.cubeMat);
-            const s = (Math.random() * 1.5) + 0.4;
-            let cubeIn = new THREE.Mesh(this.cubeGeo,this.cubeInMat);
-            cubeIn.scale.set(0.99,0.99,0.99);
-            let group = new THREE.Group();
-            group.add(cube);
-            group.add(cubeIn);
-            group.position.set(x,y,z);
-            group.scale.set(s,s,s);
-            group.rotation.z = d;
-            bigGroup.add(group);
+        else {
+            const bigGroup = new Three.Group();
+            for (let i = 0; i < this.sides; ++i) {
+                const d = Math.PI * 2 * i / this.sides;
+                const x = Math.cos(d) * this.r;
+                const y = Math.sin(d) * this.r;
+                const z = this.count * this.l;
+                let cube = new Three.LineSegments(this.cubeEdgesGeo, this.cubeMat);
+                const s = (Math.random() * 1.5) + 0.4;
+                let cubeIn = new Three.Mesh(this.cubeGeo, this.cubeInMat);
+                cubeIn.scale.set(0.99, 0.99, 0.99);
+                let group = new Three.Group();
+                group.add(cube);
+                group.add(cubeIn);
+                group.position.set(x, y, z);
+                group.scale.set(s, s, s);
+                group.rotation.z = d;
+                bigGroup.add(group);
+            }
+            this.scene.add(bigGroup);
+            this.squares.push(bigGroup);
         }
-        this.scene.add(bigGroup);
-        this.squares.push(bigGroup);
         ++this.count;
     }
 }
 
 
-class CubeCylinderStage extends StageBase{
+class CubeCylinderStage extends DevneModel.StageBase{
     constructor() {
         super();
-        this.cubeCylinder = new CubeCylinder(30,1500,30,this.scene);
+        this.cubeCylinder = new CubeCylinder(30,1500,15,this.scene);
         this.camera.position.set(0,0,-1000);
         this.camera.lookAt(0,0,300);
-
-        this.scene.fog = new THREE.Fog(0x000000,2000,4000);
+        this.scene.fog = new Three.Fog(0x000000,4000,5000);
 
     }
 
@@ -243,13 +249,13 @@ class CubeCylinderStage extends StageBase{
     }
 }
 
-class WireBaseStage extends StageBase{
+class WireBaseStage extends DevneModel.StageBase{
     constructor(){
         super();
         this.wireBase = new WireGround(100,20,20,this.scene);
         this.camera.position.y = 200;
         this.camera.lookAt(0,200,3000);
-        this.scene.fog = new THREE.Fog(0x000000,2000,4000);
+        this.scene.fog = new Three.Fog(0x000000,1000,2000);
     }
 
     onUpdate(count){
@@ -309,19 +315,19 @@ class RandomString{
     }
 }
 
-class Logo extends HUDParts{
+class Logo extends DevneModel.HUDParts{
     constructor(font){
         super(font);
-        this.rtext = new RandomString("devne.co","???????",0.005,0.5,5);
+        this.rtext = new RandomString("???????","???????",0.005,0.5,5);
         this.textSize = 0;
-        this.textGeo = new THREE.TextGeometry(this.rtext.now,{
+        this.textGeo = new Three.TextGeometry(this.rtext.now,{
             font:font,
             size:this.textSize,
             height:0.01,
             curveSegments: 12
         });
         this.textGeo.center();
-        this.mesh = new THREE.LineSegments(new THREE.EdgesGeometry(this.textGeo),new THREE.LineBasicMaterial({
+        this.mesh = new Three.LineSegments(new Three.EdgesGeometry(this.textGeo),new Three.LineBasicMaterial({
             color: 0x777777
         }));
         this.mesh.rotation.z = Math.PI;
@@ -330,7 +336,7 @@ class Logo extends HUDParts{
     }
 
     onUpdate(tick){
-        this.mesh.geometry = new THREE.EdgesGeometry(new THREE.TextGeometry(this.rtext.update(),{
+        this.mesh.geometry = new Three.EdgesGeometry(new Three.TextGeometry(this.rtext.update(),{
             font:this.font,
             size:this.textSize,
             height:0.01,
@@ -367,36 +373,36 @@ class Logo extends HUDParts{
     }
 }
 
-class CursorParts extends HUDParts{
+class CursorParts extends DevneModel.HUDParts{
     constructor(){
         super();
-        const cursor = new THREE.Geometry();
+        const cursor = new Three.Geometry();
         const w = 0.2;
         cursor.vertices.push(
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(1,1,0),
-            new THREE.Vector3(1 + w,1 - w,0),
-            new THREE.Vector3(w * 2,0,0),
-            new THREE.Vector3(1 + w,-1 + w,0),
-            new THREE.Vector3(1,-1,0),
-            new THREE.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(1,1,0),
+            new Three.Vector3(1 + w,1 - w,0),
+            new Three.Vector3(w * 2,0,0),
+            new Three.Vector3(1 + w,-1 + w,0),
+            new Three.Vector3(1,-1,0),
+            new Three.Vector3(0,0,0),
         );
         cursor.faces.push(
-            new THREE.Face3(0,1,2),
-            new THREE.Face3(0,2,3),
-            new THREE.Face3(0,3,4),
-            new THREE.Face3(0,4,5),
-            new THREE.Face3(0,2,1),
-            new THREE.Face3(0,3,2),
-            new THREE.Face3(0,4,3),
-            new THREE.Face3(0,5,4)
+            new Three.Face3(0,1,2),
+            new Three.Face3(0,2,3),
+            new Three.Face3(0,3,4),
+            new Three.Face3(0,4,5),
+            new Three.Face3(0,2,1),
+            new Three.Face3(0,3,2),
+            new Three.Face3(0,4,3),
+            new Three.Face3(0,5,4)
         );
         cursor.center();
-        this.mesh = new THREE.Mesh(cursor,new THREE.MeshBasicMaterial({
+        this.mesh = new Three.Mesh(cursor,new Three.MeshBasicMaterial({
             color:0x777777
         }));
 
-        const boundingBox = new THREE.Mesh(new THREE.CubeGeometry(2,4,1),new THREE.MeshBasicMaterial({
+        const boundingBox = new Three.Mesh(new Three.BoxGeometry(2,4,1),new Three.MeshBasicMaterial({
             color:0x111111
         }));
         boundingBox.material.visible = false;
@@ -405,52 +411,52 @@ class CursorParts extends HUDParts{
 
 }
 
-class MemberParts extends HUDParts{
+class MemberParts extends DevneModel.HUDParts{
     constructor(){
         super();
-        this.geometry = new THREE.Geometry();
+        this.geometry = new Three.Geometry();
         this.frameWidth = 0.1;
        /* this.geometry.vertices.push(
-            new THREE.Vector3(-1,-1,0),
-            new THREE.Vector3(-1,1,0),
-            new THREE.Vector3(1,1,0),
-            new THREE.Vector3(1,-1,0),
-            new THREE.Vector3(-1,-1,0),
-            new THREE.Vector3(-(1 - this.frameWidth),-(1 - this.frameWidth),0),
-            new THREE.Vector3(-(1 - this.frameWidth),(1 - this.frameWidth),0),
-            new THREE.Vector3((1 - this.frameWidth),(1 - this.frameWidth),0),
-            new THREE.Vector3((1 - this.frameWidth),-(1 - this.frameWidth),0),
-            new THREE.Vector3(-(1 - this.frameWidth),-(1 - this.frameWidth),0)
+            new Three.Vector3(-1,-1,0),
+            new Three.Vector3(-1,1,0),
+            new Three.Vector3(1,1,0),
+            new Three.Vector3(1,-1,0),
+            new Three.Vector3(-1,-1,0),
+            new Three.Vector3(-(1 - this.frameWidth),-(1 - this.frameWidth),0),
+            new Three.Vector3(-(1 - this.frameWidth),(1 - this.frameWidth),0),
+            new Three.Vector3((1 - this.frameWidth),(1 - this.frameWidth),0),
+            new Three.Vector3((1 - this.frameWidth),-(1 - this.frameWidth),0),
+            new Three.Vector3(-(1 - this.frameWidth),-(1 - this.frameWidth),0)
         );*/
         this.geometry.vertices.push(
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(0,0,0)
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0),
+            new Three.Vector3(0,0,0)
         );
         this.geometry.faces.push(
-            new THREE.Face3(0,6,1),
-            new THREE.Face3(6,0,5),
-            new THREE.Face3(1,7,2),
-            new THREE.Face3(7,1,6),
-            new THREE.Face3(2,8,3),
-            new THREE.Face3(8,2,7),
-            new THREE.Face3(3,9,4),
-            new THREE.Face3(9,3,8)
+            new Three.Face3(0,6,1),
+            new Three.Face3(6,0,5),
+            new Three.Face3(1,7,2),
+            new Three.Face3(7,1,6),
+            new Three.Face3(2,8,3),
+            new Three.Face3(8,2,7),
+            new Three.Face3(3,9,4),
+            new Three.Face3(9,3,8)
         );
-        this.mesh = new THREE.Mesh(this.geometry,new THREE.MeshBasicMaterial({
+        this.mesh = new Three.Mesh(this.geometry,new Three.MeshBasicMaterial({
             color:0x777777,
-            side:THREE.DoubleSide
+            side:Three.DoubleSide
         }));
         this.mesh.rotation.z = Math.PI / 4;
-        this.manager = new KeyFrameManager();
-        this.manager.add(new KeyFrame(this,0,25,(obj,now,duration) => {
+        this.manager = new DevneModel.KeyFrameManager();
+        this.manager.add(new DevneModel.KeyFrame(this,0,25,(obj,now,duration) => {
             let t = now / duration;
             const p = Math.sin(t * Math.PI / 2);
             obj.geometry.vertices[0].set(-p,-p,0);
@@ -459,7 +465,7 @@ class MemberParts extends HUDParts{
             obj.geometry.vertices[3].set(p,-p,0);
             obj.geometry.vertices[4].set(-p,-p,0);
         }));
-        this.manager.add(new KeyFrame(this,10,35,(obj,now,duration) => {
+        this.manager.add(new DevneModel.KeyFrame(this,10,35,(obj,now,duration) => {
             let t = now / duration;
             const p = Math.sin(t * Math.PI / 2) * (1 - this.frameWidth);
             obj.geometry.vertices[5].set(-p,-p,0);
@@ -479,9 +485,33 @@ class MemberParts extends HUDParts{
     }
 }
 
-class SelectorHud extends HUDBase{
+class PagesParts extends DevneModel.HUDParts{
+    constructor(font,...pages){
+        super(font);
+        this.pages = pages;
+        this.pageGeo = new Three.PlaneGeometry(100,100);
+        this.pageMat = new Three.MeshBasicMaterial({map});
+        this.fileMesh = new Three.Mesh(
+            new Three.PlaneGeometry(100,100),
+            new Three.MeshBasicMaterial({map:tex})
+        );
+        this.fnameObj = new Logo(font);
+    }
+}
+
+class ProfileParts extends DevneModel.HUDParts{
+
+}
+
+class FilesHud extends DevneModel.HUDParts{
+    constructor(font){
+        super(font);
+    }
+}
+
+class SelectorHud extends DevneModel.HUDBase{
     constructor(page,font){
-        super(document.getElementById('main'),font);
+        super(page.canvas,font);
         this.page = page;
 
         const cursorL = new CursorParts();
@@ -510,6 +540,14 @@ class SelectorHud extends HUDBase{
     }
 }
 
+class FilesHUD extends SelectorHud{
+    constructor(page,font){
+        super(page,font);
+    }
+    
+}
+
+
 class MembersHUD extends SelectorHud{
     constructor(page,font){
         super(page,font);
@@ -531,8 +569,8 @@ class MembersHUD extends SelectorHud{
                 this.memberArr[i].mesh.scale.set(k * s,k * s,k * s);
             };
         }
-        this.manager = new KeyFrameManager();
-        this.manager.add(new KeyFrame(this,15,45,(obj,now,duration) => {
+        this.manager = new DevneModel.KeyFrameManager();
+        this.manager.add(new DevneModel.KeyFrame(this,15,45,(obj,now,duration) => {
             let t = now / duration;
             const p = Math.sin(t * Math.PI / 2);
             obj.logo.mesh.position.y = this.hudCamera.top * p / 2;
@@ -545,7 +583,7 @@ class MembersHUD extends SelectorHud{
     }
 }
 
-class TopFrame extends FrameBase{
+class TopFrame extends DevneModel.FrameBase{
     constructor(page,font){
         super(new WireBaseStage(),new SelectorHud(page,font));
     }
@@ -563,7 +601,7 @@ class TopFrame extends FrameBase{
     }
 }
 
-class MembersFrame extends FrameBase{
+class MembersFrame extends DevneModel.FrameBase{
     constructor(page,font){
         super(new CubeCylinderStage(),new MembersHUD(page,font));
     }
@@ -582,12 +620,13 @@ class MembersFrame extends FrameBase{
 }
 
 class Page{
-    constructor(width,height,font){
-        this.renderer = new THREE.WebGLRenderer({
-            canvas:document.querySelector('#main'),
-            antialias:true
+    constructor(canvas,font){
+        this.canvas = canvas;
+        this.renderer = new Three.WebGLRenderer({
+            canvas:this.canvas,
+            antialias:true,
         });
-        this.renderer.setSize(width, height);
+        this.renderer.setSize(window.innerWidth,window.innerHeight);
 
         this.font = font;
 
@@ -597,7 +636,7 @@ class Page{
         ];
 
         this.nowFrame = this.frames[0].create(this,font);
-        this.nowFrame.onResized(width,height);
+        this.nowFrame.onResized(window.innerWidth,window.innerHeight);
         this.nowFrame.init();
         this.nowFrame.onOpenEvent();
 
@@ -605,17 +644,24 @@ class Page{
 
       //  this.frames.forEach((v) => v.onResized(width,height));
 
-        this.composer = new THREE.EffectComposer(this.renderer);
+        this.composer = new EffectComposer(this.renderer);
 
-        this.shader = new THREE.ShaderPass(THREE.PostProcessShader);
+        this.shader = new ShaderPass(postProcessShader);
+
         this.shader.renderToScreen = true;
-
         this.nowFrameIndex = 0;
         this.nextFrameIndex = -1;
 
+        /*
         this.composer.addPass(this.shader);
         this.composer.addPass(this.getNowFrame().stage.renderPath);
         this.composer.addPass(this.getNowFrame().hud.renderPath);
+         */
+
+        this.composer.addPass(this.getNowFrame().stage.renderPath);
+        this.composer.addPass(this.getNowFrame().hud.renderPath);
+        this.composer.addPass(this.shader);
+
 
         this.count = 0;
         this.transitionCount = -1;
@@ -677,8 +723,8 @@ class Page{
         this.nextFrameIndex = -1;
         this.nextFrame = null;
 
-        this.composer.passes[1] = this.getNowFrame().stage.renderPath;
-        this.composer.passes[2] = this.getNowFrame().hud.renderPath;
+        this.composer.passes[0] = this.getNowFrame().stage.renderPath;
+        this.composer.passes[1] = this.getNowFrame().hud.renderPath;
     }
 
     createNextFrame(index) {
@@ -705,15 +751,15 @@ class Page{
             let c = this.maxTransitionCount / 2 - Math.abs(this.transitionCount - this.maxTransitionCount / 2);
             c *= (c / this.maxTransitionCount) * 6;
             c = c > this.maxTransitionCount * 2 ? this.maxTransitionCount * 2 : c;
-            this.shader.material.uniforms.u_glitch_time.value = 20 + c * 3;
-            this.shader.material.uniforms.u_glitch_slide.value = 0.05 + c / 60.0;
-            this.shader.material.uniforms.u_glitch_slide_p.value = 0.2 + c / 60.0;
-            this.shader.material.uniforms.u_noise_alpha.value = 0.05 + c / 30.0;
-            this.shader.material.uniforms.u_noise_height.value = 10 + c * 2;
+            this.shader.uniforms.u_glitch_time.value = 20 + c * 3;
+            this.shader.uniforms.u_glitch_slide.value = 0.05 + c / 60.0;
+            this.shader.uniforms.u_glitch_slide_p.value = 0.2 + c / 60.0;
+            this.shader.uniforms.u_noise_alpha.value = 0.05 + c / 30.0;
+            this.shader.uniforms.u_noise_height.value = 10 + c * 2;
             --this.transitionCount;
         }
         this.composer.render();
-        ++this.shader.material.uniforms.u_count.value;
+        ++this.shader.uniforms.u_count.value;
         ++this.count;
     }
 }
@@ -721,13 +767,12 @@ class Page{
 
 
 
-const fontLoader = new THREE.FontLoader();
+const fontLoader = new Three.FontLoader();
 
-window.addEventListener('load', fontLoader.load('./font/technoid_one.json',(font) => {
+window.addEventListener('load', () => fontLoader.load('./font/technoid_one.json',(font) => {
     console.log(document.querySelector('#main'));
 
-    const page = new Page(width,height,font);
-
+    const page = new Page(document.querySelector('#main'),font);
     const update = () => {
         page.update();
         requestAnimationFrame(update);

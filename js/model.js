@@ -1,13 +1,15 @@
 "use strict";
 
-const isMouse = !('ontouchend' in document);
+import * as Three from "three";
+import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
 
-class StageBase{
+
+export class StageBase{
     constructor(){
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(45,window.innerWidth / window.innerHeight,5,100000);
+        this.scene = new Three.Scene();
+        this.camera = new Three.PerspectiveCamera(45,window.innerWidth / window.innerHeight,5,100000);
         this.scene.add(this.camera);
-        this.renderPath = new THREE.RenderPass(this.scene,this.camera);
+        this.renderPath = new RenderPass(this.scene,this.camera);
     }
 
     onUpdate(tick){
@@ -20,7 +22,7 @@ class StageBase{
     }
 }
 
-class HUDParts{
+export class HUDParts{
     constructor(font){
         this.font = font;
         this.mesh = null;
@@ -77,21 +79,21 @@ class HUDParts{
 
 }
 
-class HUDBase extends HUDParts{
+export class HUDBase extends HUDParts{
     constructor(canvas,font) {
         super(font);
         this.canvas = canvas;
-        this.hudCamera = new THREE.OrthographicCamera(-window.innerWidth / 2, window.innerWidth / 2, -window.innerHeight / 2, window.innerHeight / 2, 5, 1000);
+        this.hudCamera = new Three.OrthographicCamera(-window.innerWidth / 2, window.innerWidth / 2, -window.innerHeight / 2, window.innerHeight / 2, 5, 1000);
         this.hudCamera.position.z = 100;
         //this.hudCamera.rotation.y = Math.PI;
-        this.hudScene = new THREE.Scene();
-        this.renderPath = new THREE.RenderPass(this.hudScene, this.hudCamera);
+        this.hudScene = new Three.Scene();
+        this.renderPath = new RenderPass(this.hudScene, this.hudCamera);
         this.renderPath.clear = false;
-        this.rayCaster = new THREE.Raycaster();
+        this.rayCaster = new Three.Raycaster();
         this.rayCaster.intersectHUDParts = (parts, recursive, optionalTarget) => {
             let intersects = optionalTarget || [];
             if (Array.isArray(parts) === false) {
-                console.warn('THREE.Raycaster.intersectHUDParts: objects is not an Array.');
+                console.warn('Three.Raycaster.intersectHUDParts: objects is not an Array.');
                 return intersects;
             }
             for (let i = 0; i < parts.length; ++i) {
@@ -105,10 +107,10 @@ class HUDBase extends HUDParts{
             return intersects;
         };
         //this.rayCaster.intersectHUDParts = intersectHUDParts;
-        this.mouseVec = new THREE.Vector2();
-        this.canvas.addEventListener(isMouse ? 'mousedown' : 'touchstart',(e) => {
+        this.mouseVec = new Three.Vector2();
+        this.canvas.addEventListener(('ontouchend' in document) ? 'touchstart' : 'mousedown',(e) => {
             const t = e.currentTarget;
-            const p = isMouse ? e : e.changedTouches[0];
+            const p = ('ontouchend' in document) ? e.changedTouches[0] : e;
             const x = p.clientX - t.offsetLeft;
             const y = p.clientY - t.offsetTop;
             this.mouseVec.x = (x / t.offsetWidth) * 2 - 1;
@@ -141,7 +143,7 @@ class HUDBase extends HUDParts{
 
 
 
-class FrameBase{
+export class FrameBase{
     constructor(stageBase,hudBase){
         this.stage = stageBase;
         this.hud = hudBase;
@@ -178,7 +180,7 @@ class FrameBase{
     }
 }
 
-class KeyFrameManager{
+export class KeyFrameManager{
     constructor(){
         this.keyFrames = [];
         this.count = 0;
@@ -194,7 +196,7 @@ class KeyFrameManager{
     }
 }
 
-class KeyFrame{
+export class KeyFrame{
     constructor(object,from,to,callback){
         this.obj = object;
         this.from = from;
@@ -209,3 +211,13 @@ class KeyFrame{
         }
     }
 }
+
+export class PageData{
+    constructor(title,url,thumbnail){
+        this.title = title;
+        this.url = url;
+        this.thumbnail = thumbnail;
+    }
+}
+
+

@@ -1,0 +1,18 @@
+{
+  "name": "devne",
+  "version": "1.0.0",
+  "description": "devne.co",
+  "main": "./js/index.js",
+  "repository": "https://github.com/devne-co/webgl-site.git",
+  "author": "reikx <reikx@devne.co>",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.5.0",
+    "three": "^0.115.0",
+    "webpack": "^4.42.1"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}
